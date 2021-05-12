@@ -21,5 +21,7 @@ public:
 
 	void rotateClockWise(float angle);
 	void rotateAntiClockWise(float angle);
+
+	sf::Vector2f intersection(sf::Vector2f pos1, sf::Vector2f pos2, sf::Vector2f pos3, sf::Vector2f pos4);
 };
 

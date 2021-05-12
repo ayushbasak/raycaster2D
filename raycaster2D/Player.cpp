@@ -85,3 +85,26 @@ void Player::rotateAntiClockWise(float angle)
 	}
 }
 
+sf::Vector2f Player::intersection(sf::Vector2f q1, sf::Vector2f q2, sf::Vector2f p3, sf::Vector2f p4)
+{
+	const sf::Vector2f p1 = q1;
+	const sf::Vector2f p2 = q2;
+
+	// Calculates denominator of equations
+	const float den = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+
+	if (den == 0)
+		return { -1.f, -1.f };
+
+	const float t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / den;
+	const float u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / den;
+
+	sf::Vector2f intersection_point = { -1.f, -1.f };
+	if (t > 0 && t < 1 && u > 0 && u < 1)
+	{
+		// Gets intersection point
+		intersection_point.x = p1.x + t * (p2.x - p1.x);
+		intersection_point.y = p1.y + t * (p2.y - p1.y);
+	}
+	return intersection_point;
+}
