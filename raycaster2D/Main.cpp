@@ -2,19 +2,22 @@
 #include "Base.h"
 #include "Player.h"
 #include "IO.h"
+#include <random>
 #include <iostream>
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Raycaster2D");
-	Player player1 = Player(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 200);
+	Player player1 = Player(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 100 );
 
+	
 	sf::Vertex testWall[] = {
-		sf::Vertex(sf::Vector2f(20, 300)),
-		sf::Vertex(sf::Vector2f(300,20))
+		sf::Vector2f(40.0f, 300.0f),
+		sf::Vector2f(500.0f, 100.0f)
 	};
-
+	
 	IO keyboard = IO();
 	sf::Clock clock;
+
 	while (window.isOpen()){
 		float dt = clock.restart().asSeconds();
 		//std::cout << dt << std::endl;
@@ -25,13 +28,16 @@ int main()
 				window.close();
 		}
 
+		if (keyboard.exit())
+			return EXIT_SUCCESS;
+
 		if (keyboard.left())
 			player1.moveLeft(SPEED * dt);
-		else if (keyboard.right())
+		if (keyboard.right())
 			player1.moveRight(SPEED * dt);
-		else if (keyboard.up())
+		if (keyboard.up())
 			player1.moveUp(SPEED * dt);
-		else if (keyboard.down())
+		if (keyboard.down())
 			player1.moveDown(SPEED * dt);
 
 		if (keyboard.cwr())
@@ -45,14 +51,18 @@ int main()
 				player1.position.y + PLAYER_RADIUS);
 			sf::Vector2f ray_end(player1.position.x + VISIBILITY * cos(player1.angles[i]),
 				player1.position.y + VISIBILITY * sin(player1.angles[i]));
-			sf::Vector2f newPosition = player1.intersection(ray_begin, ray_end, sf::Vector2f(20, 300), sf::Vector2f(300, 20));
+			float dist = 8000.f;
+			
+			//sf::Vector2f newPosition = player1.intersection(ray_begin, ray_end, testWall[0], testWall[1]);	
+
+			sf::Vector2f newPosition = player1.intersection(ray_begin, ray_end, sf::Vector2f(40, 300), sf::Vector2f(500, 100));
 
 			if (newPosition.x > 0.0f)
 				ray_end = newPosition;
-			sf::Vertex line[] = { ray_begin, ray_end };
+			
+			sf::Vertex line[] = { sf::Vertex(ray_begin), sf::Vertex(ray_end) };
 			window.draw(line, 2, sf::Lines);
 		}
-
 		window.draw(testWall, 2, sf::Lines);
 		window.display();
 	}

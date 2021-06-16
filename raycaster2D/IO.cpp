@@ -28,3 +28,8 @@ bool IO::acwr()
 {
 	return sf::Keyboard::isKeyPressed(sf::Keyboard::A);
 }
+
+bool IO::exit()
+{
+	return sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
+}

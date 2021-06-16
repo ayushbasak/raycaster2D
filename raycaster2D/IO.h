@@ -10,5 +10,7 @@ public:
 	bool down();
 	bool cwr(); // clockwise rotation
 	bool acwr(); // anti-clockwise rotation
+
+	bool exit();
 };
 

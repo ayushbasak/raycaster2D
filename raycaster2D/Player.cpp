@@ -85,6 +85,11 @@ void Player::rotateAntiClockWise(float angle)
 	}
 }
 
+
+/*
+userexit's code
+https://github.com/userexit/2D-RayCasting/blob/master/2D_RayCasting/ray.cpp
+*/
 sf::Vector2f Player::intersection(sf::Vector2f q1, sf::Vector2f q2, sf::Vector2f p3, sf::Vector2f p4)
 {
 	const sf::Vector2f p1 = q1;
