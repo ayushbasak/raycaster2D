@@ -12,3 +12,10 @@ ___
 > A [Rotate Player Anticlockwise]
 > D [Rotate Player Clockwise]
 > Arrow Keys [Player Motiion]
+
+### Build
+
+Compile the soltuion file
+- Configure Global Macros in Base.h
+
+[GPL-3.0 License](LICENSE)
