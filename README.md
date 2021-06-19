@@ -2,12 +2,12 @@
 a simple 2D raycasting simulation using [SFML](https://www.sfml-dev.org/) library
 ___
 ### Versions
-* [v1.0]
-    single line wall ray intersection
 * [v2.0]
     multiple random wall generation and ray collision
+* [v1.0]
+    single line wall ray intersection
 
-![screenshot](extras/ss.png)
+![screenshot](extras/ss_v2.png)
 
 ### Keyboard Controls
 
