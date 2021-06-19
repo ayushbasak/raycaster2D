@@ -5,6 +5,12 @@
 class Player
 {
 public:
+	/*
+	* position	: player position
+	* theta		: angle of first extruding from the player
+	* angles	: angles of individual rays
+	*/
+
 	sf::Vector2f position;
 	float theta;
 	std::vector<float> angles;
@@ -13,7 +19,9 @@ public:
 
 	Player();
 	Player(sf::Vector2f pos, int density);
+
 	sf::CircleShape getObject();
+
 	void moveLeft(float distance);
 	void moveRight(float distance);
 	void moveUp(float distance);

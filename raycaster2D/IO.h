@@ -8,8 +8,10 @@ public:
 	bool right();
 	bool up();
 	bool down();
-	bool cwr(); // clockwise rotation
-	bool acwr(); // anti-clockwise rotation
+
+	/* ClockWise and AntiClockWise rotation */
+	bool cwr();
+	bool acwr();
 
 	bool exit();
 };

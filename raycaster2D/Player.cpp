@@ -3,9 +3,11 @@
 Player::Player()
 {
 	this->position = sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+
 	this->theta = 0.0f;
 	this->ray_density = 10;
-	for (int i = 1; i <= this->ray_density;i++) {
+
+	for (int i = 1; i <= this->ray_density; i++) {
 		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
 	}
@@ -20,7 +22,8 @@ Player::Player(sf::Vector2f pos, int density)
 	this->position = pos;
 	this->theta = 0.0f;
 	this->ray_density = density;
-	for (int i = 1; i <= this->ray_density;i++) {
+
+	for (int i = 1; i <= this->ray_density; i++) {
 		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
 	}
@@ -38,24 +41,32 @@ sf::CircleShape Player::getObject()
 void Player::moveLeft(float distance)
 {
 	this->position.x -= distance;
+	if(this->position.x < 0.0f)
+		this->position.x = 0.0f;
 	this->player.setPosition(this->position);
 }
 
 void Player::moveRight(float distance)
 {
 	this->position.x += distance;
+	if (this->position.x > WINDOW_WIDTH - PLAYER_RADIUS*2)
+		this->position.x = WINDOW_WIDTH - PLAYER_RADIUS * 2;
 	this->player.setPosition(this->position);
 }
 
 void Player::moveUp(float distance)
 {
 	this->position.y -= distance;
+	if (this->position.y < 0.0f)
+		this->position.y = 0.0f;
 	this->player.setPosition(this->position);
 }
 
 void Player::moveDown(float distance)
 {
 	this->position.y += distance;
+	if (this->position.y > WINDOW_HEIGHT - PLAYER_RADIUS * 2)
+		this->position.y = WINDOW_HEIGHT - PLAYER_RADIUS * 2;
 	this->player.setPosition(this->position);
 }
 
