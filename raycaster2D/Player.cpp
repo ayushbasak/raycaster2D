@@ -1,12 +1,12 @@
 #include "Player.h"
-
+#include "Base.h"
 Player::Player()
 {
 	this->position = sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 	this->theta = 0.0f;
 	this->ray_density = 10;
 	for (int i = 1; i <= this->ray_density;i++) {
-		float del_angle = 2.09f / this->ray_density;
+		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
 	}
 
@@ -21,7 +21,7 @@ Player::Player(sf::Vector2f pos, int density)
 	this->theta = 0.0f;
 	this->ray_density = density;
 	for (int i = 1; i <= this->ray_density;i++) {
-		float del_angle = 2.09f / this->ray_density;
+		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
 	}
 
@@ -112,4 +112,12 @@ sf::Vector2f Player::intersection(sf::Vector2f q1, sf::Vector2f q2, sf::Vector2f
 		intersection_point.y = p1.y + t * (p2.y - p1.y);
 	}
 	return intersection_point;
+}
+
+float Player::distanceToIntersection(sf::Vector2f ray_begin, sf::Vector2f intersection)
+{
+	float delta_x = (ray_begin.x - intersection.x);
+	float delta_y = (ray_begin.y - intersection.y);
+
+	return delta_x * delta_x + delta_y * delta_y;
 }

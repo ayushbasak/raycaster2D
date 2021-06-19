@@ -3,15 +3,21 @@
 #include "Player.h"
 #include "IO.h"
 #include <iostream>
-#include "Wall.cpp"
+#include <climits>
+#include "Wall.h"
 int main()
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Raycaster2D");
-	Player player1 = Player(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 100 );
+	window.setVerticalSyncEnabled(true);
+	Player player1 = Player(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), RAY_DENSITY );
 
-	Wall w1 = Wall();
-	std::cout << w1.wall[0].x;
+	std::vector<Wall> multiWallSystem;
+	for (int i = 0; i < WALL_COUNT;i++) {
+		Wall w = Wall();
+		//std::cout << w.vertices[0].x << std::endl;
+		multiWallSystem.push_back(w);
+	}
 
 	IO keyboard = IO();
 	sf::Clock clock;
@@ -51,18 +57,32 @@ int main()
 				player1.position.y + VISIBILITY * sin(player1.angles[i]));
 			float dist = 8000.f;
 			
-			sf::Vector2f newPosition = player1.intersection(ray_begin, ray_end, w1.wall[0] , w1.wall[1]);
-			//std::cout << testWall[0];
-			//sf::Vector2f newPosition = player1.intersection(ray_begin, ray_end, sf::Vector2f(40, 300), sf::Vector2f(500, 100));
+			sf::Vector2f newPosition = { 0.0f, 0.0f };
+			float maximumRenderDistance = FLT_MAX;
+			for (int j = 0; j < WALL_COUNT;j++) {
+				sf::Vector2f temporaryNewPosition = 
+					player1.intersection(ray_begin, ray_end, multiWallSystem[j].vertices[0], multiWallSystem[j].vertices[1]);
+				
+				if (temporaryNewPosition.x < 0.0)
+					continue;
+				float distance = player1.distanceToIntersection(ray_begin, temporaryNewPosition);
 
+				if (distance < maximumRenderDistance) {
+					maximumRenderDistance = distance;
+					newPosition = temporaryNewPosition;
+				}
+			}
+			
 			if (newPosition.x > 0.0f)
 				ray_end = newPosition;
 			
 			sf::Vertex line[] = { sf::Vertex(ray_begin), sf::Vertex(ray_end) };
 			window.draw(line, 2, sf::Lines);
 		}
-		sf::Vertex wall[] = { w1.wall[0], w1.wall[1] };
-		window.draw(wall, 2, sf::Lines);
+		for (int i = 0; i < WALL_COUNT;i++) {
+			sf::Vertex wall[] = { multiWallSystem[i].vertices[0], multiWallSystem[i].vertices[1] };
+			window.draw(wall, 2, sf::Lines);
+		}
 		window.display();
 	}
 
