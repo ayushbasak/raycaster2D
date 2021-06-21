@@ -11,3 +11,9 @@ Wall::Wall()
 		rand() % 500 + WINDOW_WIDTH/5.f
 	);
 }
+
+Wall::Wall(sf::Vector2f start, sf::Vector2f end)
+{
+	vertices[0] = start;
+	vertices[1] = end;
+}

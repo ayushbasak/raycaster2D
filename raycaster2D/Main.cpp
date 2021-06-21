@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <algorithm>
+
 #include "Base.h"
 #include "Player.h"
 #include "IO.h"
@@ -11,15 +13,22 @@ int main()
 	srand((unsigned int)time(NULL));
 
 	sf::RenderWindow window(
-		sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+		sf::VideoMode(WINDOW_WIDTH * 2, WINDOW_HEIGHT),
 		"Raycaster2D"
 	);
+
+	//sf::RenderWindow render3D(
+	//	sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+	//	"Raycaster3D"
+	//);
+
 	window.setVerticalSyncEnabled(true);
 	Player player1 = Player(
-		sf::Vector2f(
-			WINDOW_WIDTH / 2,
-			WINDOW_HEIGHT / 2
-		),
+			{
+				WINDOW_WIDTH / 2,
+				WINDOW_HEIGHT / 2
+			}
+		,
 		RAY_DENSITY
 	);
 
@@ -30,19 +39,49 @@ int main()
 		multiWallSystem.push_back(w);
 	}
 
+	Wall left = Wall({ 1.0f, 0.0f }, {1.0f, WINDOW_HEIGHT * 1.0f});
+	Wall bottom = Wall({ 0.0f, WINDOW_HEIGHT * 1.0f }, { WINDOW_WIDTH * 1.0f, WINDOW_HEIGHT * 1.0f });
+	Wall right = Wall({ WINDOW_WIDTH * 1.0f, 0.0f }, { WINDOW_WIDTH * 1.0f, WINDOW_HEIGHT * 1.0f });
+	Wall top = Wall({ 0.0f, 1.0f }, { WINDOW_WIDTH * 1.0f, 1.0f});
+
+	multiWallSystem.push_back(left);
+	multiWallSystem.push_back(bottom);
+	multiWallSystem.push_back(right);
+	multiWallSystem.push_back(top);
+
 	IO keyboard = IO();
 	sf::Clock clock;
 
 
+	/*
+	TEST SYSTEM for Raycaster 3D
+	*/
+	float TEXTURE_WIDTH = WINDOW_WIDTH / RAY_DENSITY;
+	/*sf::RectangleShape walls3D[RAY_DENSITY];
+
+	for (int i = 0; i < RAY_DENSITY;i++) {
+		walls3D[i].setSize({ TEXTURE_WIDTH, 100 });
+		walls3D[i].setPosition({ TEXTURE_WIDTH * i + 0.0f  ,0.0f });
+		walls3D[i].setFillColor(sf::Color(100, 100, 100));
+	}*/
+
+
+	sf::RectangleShape block;
 	while (window.isOpen()){
 
+		window.clear();
+		//render3D.clear();
+		
+		float closestWall = FLT_MAX;
 		float dt = clock.restart().asSeconds();
 		sf::Event event;
 
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (event.type == sf::Event::Closed) {
 				window.close();
+				//render3D.close();
+			}
 		}
 
 		if (keyboard.exit())
@@ -62,9 +101,8 @@ int main()
 		else if (keyboard.acwr())
 			player1.rotateAntiClockWise(ROTATION_SPEED * dt);
 
-		window.clear();
-		
 		window.draw(player1.getObject());
+		std::cout << cos(player1.angles[0]) << std::endl;
 		for (int i = 0; i < player1.ray_density; i++) {
 			sf::Vector2f ray_begin(
 				player1.position.x + PLAYER_RADIUS,
@@ -75,12 +113,12 @@ int main()
 				player1.position.y + VISIBILITY * sin(player1.angles[i])
 			);
 
-			float dist = 8000.f;
+			//float dist = 8000.f;
 			
 			sf::Vector2f newPosition = { 0.0f, 0.0f };
 			float maximumRenderDistance = FLT_MAX;
 
-			for (int j = 0; j < WALL_COUNT;j++) {
+			for (int j = 0; j < WALL_COUNT + 4;j++) {
 				sf::Vector2f temporaryNewPosition = 
 					player1.intersection(
 						ray_begin,
@@ -102,7 +140,7 @@ int main()
 					newPosition = temporaryNewPosition;
 				}
 			}
-			
+			//std::cout << maximumRenderDistance << std::endl;
 			if (newPosition.x > 0.0f)
 				ray_end = newPosition;
 			
@@ -117,8 +155,35 @@ int main()
 				)
 			};
 			window.draw(line, 2, sf::Lines);
+			closestWall = std::min(closestWall, maximumRenderDistance);
+
+			block.setFillColor(sf::Color::White);
+			if (maximumRenderDistance == FLT_MAX)
+				maximumRenderDistance = 0.0f;
+			
+			//maximumRenderDistance = (maximumRenderDistance * cos(player1.angles[i]));
+			
+			float renderHeight = 0.0f;
+			if(maximumRenderDistance > 0.0f)
+			renderHeight = 509.2f * atan(200.0f / sqrt(maximumRenderDistance));
+
+			block.setSize({ TEXTURE_WIDTH, renderHeight});
+			block.setPosition({ i * TEXTURE_WIDTH + WINDOW_WIDTH, WINDOW_HEIGHT /2 - renderHeight/2 });
+			int color = (int)(255 * (1000.0f - sqrt(maximumRenderDistance)) / 1000.0f);
+			block.setFillColor(sf::Color(color, color, color));
+			window.draw(block);
+
+
+			//walls3D[i].setSize({ TEXTURE_WIDTH, 10000000.0f / maximumRenderDistance });
+			//walls3D[i].setPosition({ walls3D[i].getPosition().x, 1000000.0f / (maximumRenderDistance * 2) });
+			//int distColor = (int)((10000000.0f / maximumRenderDistance));
+			//distColor = distColor > 255 ? 255 : distColor;
+			//walls3D[i].setFillColor(sf::Color(distColor, distColor, distColor));
+			////std::cout << walls3D[i].getSize().x;
+			//render3D.draw(walls3D[i]);
 		}
-		for (int i = 0; i < WALL_COUNT;i++) {
+
+		for (int i = 0; i < WALL_COUNT + 4;i++) {
 			sf::Vertex wall[] = {
 				sf::Vertex(multiWallSystem[i].vertices[0], sf::Color(165, 255, 38)),
 				sf::Vertex(multiWallSystem[i].vertices[1], sf::Color(38, 252, 252))
@@ -127,6 +192,8 @@ int main()
 			window.draw(wall, 2, sf::Lines);
 		}
 		window.display();
+		//render3D.display();
+
 	}
 
 	return 0;
