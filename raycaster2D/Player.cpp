@@ -6,11 +6,13 @@ Player::Player()
 
 	this->theta = 0.0f;
 	this->ray_density = 10;
+	this->del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
+	
 
-	for (int i = 1; i <= this->ray_density; i++) {
+	/*for (int i = 1; i <= this->ray_density; i++) {
 		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
-	}
+	}*/
 
 	this->player.setRadius(PLAYER_RADIUS);
 	this->player.setFillColor(sf::Color::White);
@@ -22,11 +24,13 @@ Player::Player(sf::Vector2f pos, int density)
 	this->position = pos;
 	this->theta = 0.0f;
 	this->ray_density = density;
-
-	for (int i = 1; i <= this->ray_density; i++) {
+	this->del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
+	
+	
+	/*for (int i = 1; i <= this->ray_density; i++) {
 		float del_angle = (VISUAL_ANGLE * 0.01745f) / this->ray_density;
 		this->angles.push_back(this->theta + del_angle * i);
-	}
+	}*/
 
 	this->player.setRadius(PLAYER_RADIUS);
 	this->player.setFillColor(sf::Color::White);
@@ -76,11 +80,11 @@ void Player::rotateClockWise(float angle)
 	if (theta >= 2 * PI)
 		theta -= 2 * PI;
 
-	for (int i = 0; i < this->ray_density;i++) {
+	/*for (int i = 0; i < this->ray_density;i++) {
 		this->angles[i] += angle;
 		if (this->angles[i] > 2 * PI)
 			this->angles[i] -= 2 * PI;
-	}
+	}*/
 }
 
 void Player::rotateAntiClockWise(float angle)
@@ -89,11 +93,11 @@ void Player::rotateAntiClockWise(float angle)
 	if (theta <= -2 * PI)
 		theta += 2 * PI;
 
-	for (int i = 0; i < this->ray_density;i++) {
-		this->angles[i] -= angle;
-		if (this->angles[i] <= 2 * PI)
-			this->angles[i] += 2 * PI;
-	}
+	//for (int i = 0; i < this->ray_density;i++) {
+	//	this->angles[i] -= angle;
+	//	if (this->angles[i] <= 2 * PI)
+	//		this->angles[i] += 2 * PI;
+	//}
 }
 
 

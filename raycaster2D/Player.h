@@ -13,7 +13,8 @@ public:
 
 	sf::Vector2f position;
 	float theta;
-	std::vector<float> angles;
+	float del_angle;
+	//std::vector<float> angles;
 	int ray_density;
 	sf::CircleShape player;
 
@@ -29,6 +30,9 @@ public:
 
 	void rotateClockWise(float angle);
 	void rotateAntiClockWise(float angle);
+
+
+	//Returns exact coordinate of intersection between a ray and a wall
 
 	sf::Vector2f intersection(sf::Vector2f pos1, sf::Vector2f pos2, sf::Vector2f pos3, sf::Vector2f pos4);
 

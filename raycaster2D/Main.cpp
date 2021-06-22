@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
+//#include <nlohmann/json.hpp>
+
 #include <algorithm>
+//#include <fstream>
 
 #include "Base.h"
 #include "Player.h"
@@ -11,6 +14,12 @@
 int main()
 {
 	srand((unsigned int)time(NULL));
+
+	/*nlohmann::json j;
+	std::ifstream input("configs.json");
+	input >> j;
+
+	std::cout << j["name"] << std::endl;*/
 
 	sf::RenderWindow window(
 		sf::VideoMode(WINDOW_WIDTH * 2, WINDOW_HEIGHT),
@@ -67,10 +76,34 @@ int main()
 
 
 	sf::RectangleShape block;
+
+	sf::Vertex flooring[] = {
+		sf::Vertex({WINDOW_WIDTH, WINDOW_HEIGHT / 2}, sf::Color(54, 0, 69)),
+		sf::Vertex({WINDOW_WIDTH * 2, WINDOW_HEIGHT / 2}, sf::Color(54, 0, 69)),
+		sf::Vertex({WINDOW_WIDTH * 2, WINDOW_HEIGHT}, sf::Color(95, 4, 120)),
+		sf::Vertex({WINDOW_WIDTH, WINDOW_HEIGHT}, sf::Color(95, 4, 120)),
+	};
+
+	sf::Vertex ceiling[] = {
+		sf::Vertex({WINDOW_WIDTH, 0.0f}, sf::Color(241, 255, 150)),
+		sf::Vertex({WINDOW_WIDTH * 2, 0.0f}, sf::Color(241, 255, 150)),
+		sf::Vertex({WINDOW_WIDTH * 2, WINDOW_HEIGHT / 2}, sf::Color(140, 148, 87)),
+		sf::Vertex({WINDOW_WIDTH, WINDOW_HEIGHT / 2}, sf::Color(140, 148, 87)),
+	};
+
+	//sf::RectangleShape floor;
+	//floor.setFillColor(sf::Color(54, 0, 69));
+	//floor.setPosition({ WINDOW_WIDTH, WINDOW_HEIGHT /2 });
+	//floor.setSize({ WINDOW_WIDTH, WINDOW_HEIGHT  / 2});
+
+	//sf::RectangleShape ceiling;
+	//ceiling.setFillColor(sf::Color(241, 255, 150));
+	//ceiling.setPosition({ WINDOW_WIDTH, 0.0f });
+	//ceiling.setSize({ WINDOW_WIDTH, WINDOW_HEIGHT / 2 });
+
 	while (window.isOpen()){
 
 		window.clear();
-		//render3D.clear();
 		
 		float closestWall = FLT_MAX;
 		float dt = clock.restart().asSeconds();
@@ -80,9 +113,14 @@ int main()
 		{
 			if (event.type == sf::Event::Closed) {
 				window.close();
-				//render3D.close();
 			}
 		}
+
+		window.draw(flooring, 4, sf::Quads);
+		window.draw(ceiling, 4, sf::Quads);
+
+		/*window.draw(floor);
+		window.draw(ceiling);*/
 
 		if (keyboard.exit())
 			return EXIT_SUCCESS;
@@ -102,15 +140,23 @@ int main()
 			player1.rotateAntiClockWise(ROTATION_SPEED * dt);
 
 		window.draw(player1.getObject());
-		std::cout << cos(player1.angles[0]) << std::endl;
+		//std::cout << cos(player1.theta + 5 * player1.del_angle) << std::endl;
 		for (int i = 0; i < player1.ray_density; i++) {
 			sf::Vector2f ray_begin(
 				player1.position.x + PLAYER_RADIUS,
 				player1.position.y + PLAYER_RADIUS
 			);
+
+
+			float currentRayAngle = player1.theta + player1.del_angle * i;
+			//std::cout << currentRayAngle << std::endl;
+			
+
+
 			sf::Vector2f ray_end(
-				player1.position.x + VISIBILITY * cos(player1.angles[i]),
-				player1.position.y + VISIBILITY * sin(player1.angles[i])
+
+				player1.position.x + VISIBILITY * cos(currentRayAngle),
+				player1.position.y + VISIBILITY * sin(currentRayAngle)
 			);
 
 			//float dist = 8000.f;
@@ -161,7 +207,12 @@ int main()
 			if (maximumRenderDistance == FLT_MAX)
 				maximumRenderDistance = 0.0f;
 			
-			//maximumRenderDistance = (maximumRenderDistance * cos(player1.angles[i]));
+			//float slope1 = ta/*n(currentRayAngle);
+
+			//float slope2 = ()*/
+
+
+			//maximumRenderDistance = (maximumRenderDistance * cos(currentRayAngle));
 			
 			float renderHeight = 0.0f;
 			if(maximumRenderDistance > 0.0f)
@@ -169,8 +220,15 @@ int main()
 
 			block.setSize({ TEXTURE_WIDTH, renderHeight});
 			block.setPosition({ i * TEXTURE_WIDTH + WINDOW_WIDTH, WINDOW_HEIGHT /2 - renderHeight/2 });
-			int color = (int)(255 * (1000.0f - sqrt(maximumRenderDistance)) / 1000.0f);
-			block.setFillColor(sf::Color(color, color, color));
+			int color = (int)(255 * 
+					((1000.0f - sqrt(maximumRenderDistance)) / 1000.0f ) *
+					((1000.0f - sqrt(maximumRenderDistance)) / 1000.0f)
+				);
+			block.setFillColor(sf::Color(
+				color,
+				(int) color/2,
+				(int)color/2)
+			);
 			window.draw(block);
 
 
@@ -192,8 +250,6 @@ int main()
 			window.draw(wall, 2, sf::Lines);
 		}
 		window.display();
-		//render3D.display();
-
 	}
 
 	return 0;
